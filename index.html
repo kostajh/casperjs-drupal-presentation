@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>CasperJS and Drupal</title>
+
+    <meta name="description" content="Using CasperJS with Drupal">
+    <meta name="author" content="Kosta Harlan">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+    
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/solarized_dark.css">
+    
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+     if( window.location.search.match( /print-pdf/gi ) ) {
+       var link = document.createElement( 'link' );
+       link.rel = 'stylesheet';
+       link.type = 'text/css';
+       link.href = 'css/print/pdf.css';
+       document.getElementsByTagName( 'head' )[0].appendChild( link );
+     }
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+	<section>
+          <h1>CasperJS and Drupal</h1>
+          <p>
+            <small><a href="http://kostaharlan.net">Kosta Harlan</a> / <a href="https://www.drupal.org/u/kostajh">@kostajh</a></small>
+          </p>
+        </section>
+
+	<section>
+          <h2>Who am I?</h2>
+          <ul>
+            <li>Live in Durham, NC</li>
+            <li>Work at <a href="https://designhammer.com">DesignHammer</a></li>
+            <li>Drupal developer for ~8 years</li>
+          </ul>
+
+          <aside class="notes">
+          </aside>
+	</section>
+
+        <section>
+          <section>
+            <h2>Who are you?</h2>
+            <aside class="notes">
+              <p>Raise your hand if...</p>
+              <ul>
+                <li>You are a Drupal developer</li>
+                <li>You have written automated tests before</li>
+                <li>You've used CasperJS before</li>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h2>Goals</h2>
+            <ul>
+              <li class="fragment">Understand what CasperJS is and how to install it</li>
+              <li class="fragment">Know use cases where CasperJS can help you on your next project</li>
+              <li class="fragment">Feel confident to start using CasperJS!</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>What is CasperJS?</h2>
+          </section>
+          <section>
+            <p><q cite="http://casperjs.org">&ldquo;CasperJS is a navigation scripting & testing utility for PhantomJS and SlimerJS written in Javascript&rdquo;</p></q>
+            <aside class="notes">
+              <p>PhantomJS = scriptable, headless WebKit; SlimerJS = Gecko engine</p>
+            </aside>
+          </section>
+          <section>
+            <h2>What does that mean?</h2>
+          </section>
+          <section>
+            <h2>A tool for</h2>
+            <ul>
+              <li>defining &amp; ordering browsing <a href="http://docs.casperjs.org/en/latest/quickstart.html">navigation steps</a></li>
+              <li>filling &amp; submitting <a href="http://docs.casperjs.org/en/latest/modules/casper.html#fill">forms</a></li>
+              <li><a href="http://docs.casperjs.org/en/latest/modules/casper.html#click">clicking</a> &amp; following links</li>
+              <li>capturing <a href="http://docs.casperjs.org/en/latest/modules/casper.html#captureselector">screenshots</a> of a page (or part of it)</li>
+              <li><a href="http://docs.casperjs.org/en/latest/modules/tester.html">testing</a> remote DOM</li>
+              <li><a href="http://docs.casperjs.org/en/latest/modules/casper.html#logging.html">logging</a> events</li>
+              <li><a href="http://docs.casperjs.org/en/latest/modules/casper.html#download">downloading</a> resources, including binary ones</li>
+              <li>writing <a href="http://docs.casperjs.org/en/latest/testing.html">functional test suites</a>, saving results as JUnit XML</li>
+              <li><a href="https://github.com/n1k0/casperjs/blob/master/samples/">scraping</a> Web contents</li>
+            </ul>
+          </section>
+          <section>
+            <h2>But I don't know JavaScript :-(</h2>
+          </section>
+          <section>
+            <h2><code>docs.casperjs.org</code></h2>
+            <p>A model for outstanding documentation</p>
+          </section>
+          <section>
+            <h2>Installation</h2>
+            <h3>Linux</h3>
+            <pre>
+              <code class="bash">
+$ npm install -g casperjs
+              </code>
+            </pre>
+            <h3>Mac OS</h3>
+            <pre>
+              <code class="bash">
+$ brew install casperjs --devel
+              </code>
+            </pre>
+            <p>Binaries are available for download as well</p>
+          </section>
+        </section>
+
+        <section>
+          <h1>Use cases</h1>
+          <ol>
+            <li class="fragment">Testing the front-end</li>
+            <li class="fragment">Verifying data migrations</li>
+            <li class="fragment">Web scraping and content migration</li>
+            <li class="fragment">Kitchen sink</li>
+          </ol>
+        </section>
+
+        <section>
+          <section>
+            <h2>1. Testing the front-end</h2>
+            <img src="test.gif">
+          </section>
+          <section>
+            <h2>Test access to the online help section</h2>
+          </section>
+          <section>
+            <h3>Can anonymous users access online help?</h3>
+            <pre>
+              <code class="javascript">
+casper.test.begin('Restrict access to online help', function suite(test) {
+casper.start();
+casper.setHttpAuth('htaccess-user', 'htaccess-pass');
+casper.thenOpen(link + '/handbook').waitForSelector('.error',
+    function then() {
+        this.test.assertTextExists('Access denied',
+            'Anonymous user denied access to restricted node.');
+        this.test.assertExists('#user-login',
+            'Login form present on Access Denied page');
+    },
+                function timeout() {
+        this.capture('/tmp/help-access-denied.png');
+        this.test.assert(false, 'Loaded user login form
+            and displayed access denied');
+    });
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h3>Can the School Administrator user role access?</h3>
+            <pre>
+            <code class="javascript">
+casper.thenOpen(link + '/user').waitForSelector('#user-login',
+    function then() {
+        this.fill('form#user-login', {
+            'name': 'testOnlineHelpSchoolAdmin',
+            'pass': 'secret'
+        }, true);
+    }});
+
+casper.thenOpen(link + '/handbook').waitForText('Access denied',
+    function then() {
+        this.test.assertTextExists('Access denied', 'School Administrator
+            user denied access to restricted node.');
+    });
+            </code>
+            </pre>
+          </section>
+        <section>
+              <h3>Can the Administrator user role access?</h3>
+              <pre>
+                <code class="javascript">
+casper.thenOpen(link + '/user/logout', function() {});
+
+casper.thenOpen(link + '/handbook').waitForText('Online Help',
+    function then() {
+        this.test.assertTextExists('Online Help',
+            'Admin can access Online Help');
+        this.test.assertDoesntExist('#user-login',
+            'Login form not present on handbook page');
+    });
+              </code>
+            </pre>
+          </section>
+          <section id="fragements">
+            <h2>Why is this useful?</h2>
+            <ol>
+              <li class="fragment">Remove manual testing from the equation</li>
+              <li class="fragment">Catch regressions</li>
+              <li class="fragment">Define the key interactions for your site</li>
+            </ol>
+          </section>
+          <section>
+            <h2>Caveats</h2>
+            <ol>
+              <li class="fragment">Casper might move faster than your server</li>
+              <li class="fragment">Asynchronous code can be tricky. Follow the docs carefully</li>
+              <li class="fragment">Readability: Behat features are easier to read than CasperJS tests</li>
+              <li class="fragment">JUnit XML export fails under some circumstances</li>
+              <li class="fragment">Interacting with Drupal backend can be done through Drush, but tricky</li>
+            </ol>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>2. Verifying data <br />migrations</h1>
+          </section>
+          <section>
+            <h1>The problem</h1>
+            <p class="fragment">Migrate code (using the <a href="https://drupal.org/project/migrate">Migrate</a> module) can be verified manually when implementing a migration class</p>
+            <pre class="fragment">
+                <code class="php">
+$this->addFieldMapping('title', 'IncomingTitle')
+     ->description(t('Map the IncomingTitle field to node title.'));
+                </code>
+            </pre>
+          </section>
+          <section>
+            <p class="fragment">But what if your source data is constantly changing and there are data integrity issues?</p>
+            <pre class="fragment">
+              <code class="php">
+$this->addFieldMapping('field_publication_authors', 'publication_authors')
+     ->description(t('Entity reference to publication authors.'));
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h2>Validate your migrations behaved as expected</h2>
+          </section>
+          <section>
+            <p>Process all rows in the JSON document</p>
+            <q cite="https://github.com/n1k0/casperjs/blob/master/samples/dynamic.js">This technique uses <em>dynamic</em> steps - we don't know ahead of time how many records we are checking.</q>
+            <pre>
+              <code class="javascript">
+function check() {
+    if (json[currentRow] && currentRow < json.length) {
+        verifyData.call(this, json[currentRow]);
+        currentRow++;
+        this.run(check);
+    } else {
+        this.test.done();
+    }
+}
+// Run the test.
+casper.run(check);
+              </code>
+            </pre>
+          </section>
+          <section>
+            <p>Make some assertions</p>
+            <pre>
+              <code class="javascript">
+this.test.assertTextExists('Successfully located Drupal entity',
+    'Success message present');
+this.test.assertTextDoesntExist('We found more than one entity matching',
+    'No duplicate content found.');
+this.test.assertTitleMatch(new RegExp(label.split(' ')[0], 'i'),
+    'Titles match');
+              </code>
+            </pre>
+          </section>
+          <section>
+            <pre>
+              <code class="javascript">
+var pubAuthorJoin = require(json_dir + '/' + datestamp + '/PUB_AUTHORS.json');
+function getPubIdsForAuthId(authId) {
+    var pubs = [];
+    for (var i = 0; i < pubAuthorJoin.length; i++) {
+        if (pubAuthorJoin[i][1] == authId) {
+            pubs.push(pubAuthorJoin[i][3]);
+        }
+    }
+    return pubs;
+}
+              </code>
+            </pre>
+            <pre>
+              <code class="javascript">
+this.thenOpen(link + '/api/publication-author/' + aid,
+            </pre>
+              </code>
+              <pre>
+                <code class="javascript">
+if (pubsForAuthor.length > 0) {
+    for (var i = 0; i < pubsForAuthor.length; i++) {
+        this.test.assertTextExists(pubsForAuthor[i], 'Pub ID ' + pubsForAuthor[i] + ' is linked.');
+    }
+}
+              </code>
+            </pre>
+          </section>
+          <section>
+            <p>Sometimes the server hiccups</p>
+            <pre>
+              <code class="javascript">
+if (response.status !== 200) {
+    if (retry > 3) {
+        this.test.comment('Retried the URL 4 times, got response ' +
+            response.status);
+        this.test.assert(false, 'Failed to load ' + cleanString(label)
+            + ' with author id ' + aid);
+        retry = 0;
+        return;
+    }
+    // Retry.
+    this.test.comment('Got a ' + response.status + ' error; retrying');
+    currentRow = currentRow - 1;
+    retry++;
+    this.wait(5000);
+    return;
+}
+              </code>
+            </pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>3. Simple content <br />migration</h1>
+          </section>
+          <section>
+            <h3>Migrating poorly structured HTML content</h3>
+            <img class="fragment" src="nchsaa.png" alt="poorly structured content">
+            <p class="fragment">~1500 links on a page. Each link goes to a page that has no title and a few paragraphs of jumbled HTML</p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>4. All-Purpose Utility scripting</h1>
+          </section>
+          <section>
+            <p>PGH example</p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>Resources,<br />Tips <br />& Tricks</h1>
+          </section>
+          <section>
+            <ul>
+              <li class="fragment">Add CasperJS to your project sources in Eclipse/PHPStorm to get autocompletion</li>
+              <li class="fragment">Use <a href="https://bitbucket.org/davereid/drush-casperjs">Drush CasperJS</a> and/or <a href="https://github.com/Lullabot/drupal-boilerplate">Drupal Boilerplate</a></li>
+              <ul>
+                <li class="fragment">Alternatively look at <a href="https://www.drupal.org/project/drush_rest_api">Drush REST API</a></li>
+              </ul>
+              <li class="fragment">Write shell scripts to wrap around your script, make environment agnostic as much as possible</li>
+              <li class="fragment">Experiment and have fun!</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <h1>The End</h1>
+          <h2>Thanks!</h2>
+          <p>Feedback or questions: <br />kosta@kostaharlan.net<br />kostajh on Drupal.org / GitHub / IRC</p>
+        </section>
+	
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+     // Full list of configuration options available here:
+     // https://github.com/hakimel/reveal.js#configuration
+     Reveal.initialize({
+       controls: true,
+       progress: true,
+       history: true,
+       center: true,
+
+       theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+       transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+       // Parallax scrolling
+       // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+       // parallaxBackgroundSize: '2100px 900px',
+
+       // Optional libraries used to extend on reveal.js
+       dependencies: [
+	 { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+	 { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+	 { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+	 { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+	 { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+	 { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+       ]
+     });
+
+    </script>
+
+  </body>
+</html>
