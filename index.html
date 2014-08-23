@@ -353,14 +353,67 @@ if (response.status !== 200) {
             <img class="fragment" src="nchsaa.png" alt="poorly structured content">
             <p class="fragment">~1500 links on a page. Each link goes to a page that has no title and a few paragraphs of jumbled HTML</p>
           </section>
+          <section>
+            <h2>Step one: scrape the listing page</h2>
+            <pre>
+              <code class="javascript">
+[
+    {
+        "title": "CHANGES APPROVED IN NCHSAA WRESTLING REGIONALS, BASKETBALL SCHEDULING",
+        "date": "Feb 13, 2014",
+        "link": "http://www.nchsaa.org/newsletter.php?mode=displayHTML&archiveID=3375"
+    },
+    {
+        "title": "CHATHAM CENTRAL COACH HITS MILESTONE",
+        "date": "Feb 12, 2014",
+        "link": "http://www.nchsaa.org/newsletter.php?mode=displayHTML&archiveID=3372"
+    }
+] 
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h2>Step two: Clean up content & post to Drupal</h2>
+          </section>
+          <section>
+              <pre>
+                <code class="javascript">
+casper.start().then(function() {
+    this.echo('Starting migration', 'INFO');
+    casper.setHttpAuth('htaccess', 'supersecret');
+    casper.thenOpen(site + '/user/login', function() {
+      this.fill('form#user-login', {
+        'name': user,
+        'pass': pass
+      }, true);
+    });
+    this.echo('Logged in as ' + user, 'COMMENT');
+});
+casper.run(check);
+                </code>
+              </pre>
+          </section>
         </section>
 
         <section>
           <section>
-            <h1>4. All-Purpose Utility scripting</h1>
+            <h1>4. Kitchen Sink</h1>
+            <h2>All purpose scripting utility</h2>
           </section>
           <section>
-            <p>PGH example</p>
+            <h2>Scenario</h2>
+            <ol>
+            <li class="fragment">Drupal site where people submit Applications.</li>
+            <li class="fragment">Applications have hundreds of questions</li>
+            <li class="fragment">Application form uses AJAX to autosave responses. The Application has several thousand formulas for auto-calculating fields, all written in JavaScript.</li>
+            <li class="fragment">This required users to click on the auto-calculated field for it to save. <b>:-(</b></li>
+            <li class="fragment">Problem: when admins go to run a CSV export, there are thousands of fields that don't have correct values</li>
+            </ol>
+          </section>
+          <section>
+            <h2>Solution</h2>
+            <p class="fragment">Go click on 10,000+ fields?</p>
+            <p class="fragment"><b>Have a script do it for you</b></p>
           </section>
         </section>
 
